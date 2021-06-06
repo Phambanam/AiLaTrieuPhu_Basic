@@ -1,42 +1,46 @@
 package com.example.ailatrieuphu1
 
 import android.app.AlertDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.TextView
+import com.example.ailatrieuphu1.data.DBManager
 import com.example.ailatrieuphu1.databinding.ActivityMainBinding
+import com.example.ailatrieuphu1.model.Answer
+import com.example.ailatrieuphu1.model.Question
 
 class MainActivity : AppCompatActivity() ,View.OnClickListener {
 
-
     private  lateinit var binding: ActivityMainBinding
-    private lateinit var mListQuestion : MutableList<QUestion>
+    private lateinit var mListQuestion : MutableList<Question>
     private var currentQuestion  = 0
-    private lateinit var mQuestion: QUestion
+    private lateinit var mQuestion: Question
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        mListQuestion = getListQuestion()
-        Log.d("AAA",mListQuestion[2].content)
+        val dbManager = DBManager(this)
+        mListQuestion = dbManager.getData()
         if (mListQuestion.isEmpty()) return
         setDataQuestion(mListQuestion[currentQuestion])
+
+
     }
 
-    private fun setDataQuestion(get: QUestion) {
+    private fun setDataQuestion(get: Question) {
         mQuestion = get
 
-        binding.tvQuestion.text = "Question ${get.number}"
+        binding.tvQuestion.text = "Question ${get.levelQuestion}"
         binding.tvContentQuestion.text = get.content
-
-        binding.tvAnswer1.text = get.listAnswer[0].content
-        binding.tvAnswer2.text = get.listAnswer[1].content
-        binding.tvAnswer3.text = get.listAnswer[2].content
-        binding.tvAnswer4.text = get.listAnswer[3].content
+        Log.d("BBBBB",get.caseA)
+        binding.tvAnswer1.text = get.caseA
+        binding.tvAnswer2.text = get.caseB
+        binding.tvAnswer3.text = get.caseC
+        binding.tvAnswer4.text = get.caseD
 
         binding.tvAnswer1.setBackgroundResource(R.drawable.bg_blue_conner_30)
         binding.tvAnswer2.setBackgroundResource(R.drawable.bg_blue_conner_30)
@@ -51,63 +55,148 @@ class MainActivity : AppCompatActivity() ,View.OnClickListener {
 
     }
 
-    private fun getListQuestion() : MutableList<QUestion>{
-        val list : MutableList<QUestion> = mutableListOf()
-
-        val answerList1 : MutableList<Answer> = mutableListOf()
-        answerList1.add(Answer("Gà",true))
-        answerList1.add(Answer("Chó",false))
-        answerList1.add(Answer("Vịt",false))
-        answerList1.add(Answer("Mèo",false))
-        list.add(QUestion(1,"Meò mả ... đồng?",answerList1))
-
-        val answerList2 : MutableList<Answer> = mutableListOf()
-        answerList2.add(Answer("Đa",true))
-        answerList2.add(Answer("Đệm",false))
-        answerList2.add(Answer("Tay",false))
-        answerList2.add(Answer("Nước",false))
-        list.add(QUestion(2,"Chân cứng ... Mền?",answerList2))
-
-        val answerList3 : MutableList<Answer> = mutableListOf()
-        answerList3.add(Answer("Nghệ An",false))
-        answerList3.add(Answer("Hồ Chí Minh",false))
-        answerList3.add(Answer("Hà Nội",true))
-        answerList3.add(Answer("ĐÀ Nẵng",false))
-        list.add(QUestion(3,"Thủ Đô của Việt Nam?",answerList3))
-
-        val answerList4 : MutableList<Answer> = mutableListOf()
-        answerList4.add(Answer("Gà",true))
-        answerList4.add(Answer("Chó",false))
-        answerList4.add(Answer("Vịt",false))
-        answerList4.add(Answer("Mèo",false))
-        list.add(QUestion(4,"Meò mả ... đồng?",answerList4))
-        return list
-    }
 
     override fun onClick(v: View?) {
         if (v != null) when(v.id){
             R.id.tvAnswer1 -> {
                 binding.tvAnswer1.setBackgroundResource(R.drawable.bg_orange_conner_30)
-                checkAnswer(binding.tvAnswer1,mQuestion,mQuestion.listAnswer[0])
+                checkAnswer(binding.tvAnswer1,mQuestion,mQuestion.caseA)
             }
             R.id.tvAnswer2 ->{
                 binding.tvAnswer2.setBackgroundResource(R.drawable.bg_orange_conner_30)
-                checkAnswer(binding.tvAnswer2,mQuestion,mQuestion.listAnswer[1])
+                checkAnswer(binding.tvAnswer2,mQuestion,mQuestion.caseB)
             }
             R.id.tvAnswer3 ->{
                 binding.tvAnswer3.setBackgroundResource(R.drawable.bg_orange_conner_30)
-                checkAnswer(binding.tvAnswer3,mQuestion,mQuestion.listAnswer[2])
+                checkAnswer(binding.tvAnswer3,mQuestion,mQuestion.caseC)
             }
-            else  ->{
+            R.id.tvAnswer4  ->{
                 binding.tvAnswer4.setBackgroundResource(R.drawable.bg_orange_conner_30)
-                checkAnswer(binding.tvAnswer4,mQuestion,mQuestion.listAnswer[3])
+                checkAnswer(binding.tvAnswer4,mQuestion,mQuestion.caseD)
             }
+            R.id.ivHelp1 ->{
+
+                help5050()
+
+
+            }
+            R.id.ivHelp2->{
+                binding.ivHelp2.setBackgroundResource(R.drawable.atp__activity_player_button_image_help_audience_x)
+                helpAudience()
+            }
+            R.id.ivHelp3 ->{
+                binding.ivHelp3.setBackgroundResource(R.drawable.atp__activity_player_button_image_help_call_x)
+                helpCall()
+            }
+            R.id.ivHelp4 ->{
+
+                helpStop()
+
+            }
+
 
         }
     }
-    private fun checkAnswer(textView: TextView, question : QUestion, answer: Answer ){
+
+    private fun helpStop() {
+        binding.ivHelp4.setBackgroundResource(R.drawable.atp__activity_player_button_image_help_stop)
+        showDialog("Chuc Mung Ban tra loi dung $currentQuestion cau hoi")
+
+    }
+
+    private fun helpCall() {
+        binding.ivHelp3.setBackgroundResource(R.drawable.atp__activity_player_button_image_help_call_x)
+        binding.ivHelp3.isEnabled = false
+        var rd = (1..4).random()
+
+        var answer : String = mQuestion.answer()
+
+
+        when(rd){
+            1 -> {
+                binding.peopleHelp.setBackgroundResource(R.drawable.ic_call_relav_billgate)
+                binding.tvCallHelp.text = "Câu này dễ quá đáp án là   $answer  con nhé :)"
+            }
+            2 -> {
+                binding.peopleHelp.setBackgroundResource(R.drawable.ic_call_relav_obama)
+                binding.tvCallHelp.text = "Tôi chắc chắn là : $answer "
+            }
+            3 -> {
+                binding.peopleHelp.setBackgroundResource(R.drawable.ic_call_relav_stever)
+                binding.tvCallHelp.text = "Chọn luôn cho chú đáp án :  $answer nhé "
+            }
+            4 -> {
+                var x = (1..4).random()
+                when(x){
+
+                    1 -> {
+                        binding.peopleHelp.setBackgroundResource(R.drawable.ic_call_relav_troll1)
+                        binding.tvCallHelp.text = "Hôm nay tôi không mang não nên không biết "
+                    }
+                    2 -> {
+                        binding.peopleHelp.setBackgroundResource(R.drawable.ic_call_relav_troll2)
+                        binding.tvCallHelp.text = "Tôi chắc chắn câu này có 1 câu đúng  "
+                    }
+                    3 -> {
+                        binding.peopleHelp.setBackgroundResource(R.drawable.ic_call_relav_troll3)
+                        binding.tvCallHelp.text = " Bạn nghĩ như thế nào mà dùng quyền trợ giúp câu này  "
+                    }
+                    4 ->{
+                        binding.peopleHelp.setBackgroundResource(R.drawable.ic_call_relav_troll4)
+                        binding.tvCallHelp.text = " Tất tay vào b đi bạn, nó không biết đúng không nhưng tôi thích  "
+                    }
+                }
+            }
+        }
         Handler().postDelayed({
-            if (answer.isCorrect){
+            binding.peopleHelp.setBackgroundResource(0)
+            binding.tvCallHelp.text = ""
+
+        },3000)
+    }
+
+    private fun helpAudience() {
+        TODO("Not yet implemented")
+    }
+
+    private fun help5050(){
+        binding.ivHelp1.setBackgroundResource(R.drawable.atp__activity_player_button_image_help_5050_x)
+        binding.ivHelp1.isEnabled = false
+        if(mQuestion.caseA == mQuestion.answer()){
+            binding.tvAnswer2.text = ""
+            binding.tvAnswer3.text = ""
+            binding.tvAnswer2.isEnabled = false
+            binding.tvAnswer3.isEnabled = false
+        }else{
+            if(mQuestion.caseB == mQuestion.answer()){
+                binding.tvAnswer3.text = ""
+                binding.tvAnswer1.text = ""
+                binding.tvAnswer2.isEnabled = false
+                binding.tvAnswer3.isEnabled = false
+            }else{
+                if(mQuestion.caseC == mQuestion.answer()){
+                    binding.tvAnswer1.text = ""
+                    binding.tvAnswer2.text = ""
+                    binding.tvAnswer1.isEnabled = false
+                    binding.tvAnswer2.isEnabled = false
+                }else{
+                    if(mQuestion.caseD == mQuestion.answer()){
+                        binding.tvAnswer2.text = ""
+                        binding.tvAnswer1.text = ""
+                        binding.tvAnswer1.isEnabled = false
+                        binding.tvAnswer2.isEnabled = false
+                    }
+                }
+            }
+        }
+    }
+
+    private fun checkAnswer(textView: TextView, question : Question, trueCase: String){
+
+
+
+        Handler().postDelayed({
+            if (question.answer() == trueCase){
                 textView.setBackgroundResource(R.drawable.bg_green_conner_30)
                 nextQuestion()
             }
@@ -134,10 +223,14 @@ class MainActivity : AppCompatActivity() ,View.OnClickListener {
                 run {
                     currentQuestion = 0
                     setDataQuestion(mListQuestion[currentQuestion])
+                    newGame()
+                    var intent  = Intent(this.context,LoginActivity::class.java)
+                    startActivity(intent)
                     dialog.dismiss()
                 }
             }
         }
+
         val alertDialog = builder.create()
          alertDialog.show()
 
@@ -145,16 +238,15 @@ class MainActivity : AppCompatActivity() ,View.OnClickListener {
     }
 
 
-    private fun showAnswerCorrect(question: QUestion) {
-        if(question.listAnswer.isEmpty()) return
-        when {
-            question.listAnswer[0].isCorrect -> {
+    private fun showAnswerCorrect(question: Question) {
+        when( mQuestion.answer()) {
+            mQuestion.caseA  -> {
                 binding.tvAnswer1.setBackgroundResource(R.drawable.bg_green_conner_30)
             }
-            question.listAnswer[1].isCorrect -> {
+            mQuestion.caseB  -> {
                 binding.tvAnswer2.setBackgroundResource(R.drawable.bg_green_conner_30)
             }
-            question.listAnswer[2].isCorrect -> {
+            mQuestion.caseC -> {
                 binding.tvAnswer3.setBackgroundResource(R.drawable.bg_green_conner_30)
             }
             else -> {
@@ -167,13 +259,31 @@ class MainActivity : AppCompatActivity() ,View.OnClickListener {
         if(currentQuestion == mListQuestion.size - 1)
             showDialog("you win !!")
         else{
+            binding.tvAnswer1.isEnabled = true
+            binding.tvAnswer2.isEnabled = true
+            binding.tvAnswer3.isEnabled = true
+            binding.tvAnswer4.isEnabled = true
             currentQuestion++
             Handler().postDelayed({
-                Log.d("AAA","${mListQuestion[currentQuestion].listAnswer}")
                 setDataQuestion(mListQuestion[currentQuestion])
             },1000)
 
         }
 
     }
+    private fun newGame(){
+        binding.tvAnswer1.isEnabled = true
+        binding.tvAnswer2.isEnabled = true
+        binding.tvAnswer3.isEnabled = true
+        binding.tvAnswer4.isEnabled = true
+        binding.ivHelp4.isEnabled = true
+        binding.ivHelp3.isEnabled = true
+        binding.ivHelp2.isEnabled = true
+        binding.ivHelp1.isEnabled = true
+        binding.ivHelp1.setBackgroundResource(R.drawable.atp__activity_player_button_image_help_5050)
+        binding.ivHelp3.setBackgroundResource(R.drawable.atp__activity_player_button_image_help_call)
+        binding.ivHelp2.setBackgroundResource(R.drawable.atp__activity_player_button_image_help_audience)
+
+    }
+
 }
