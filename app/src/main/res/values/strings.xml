@@ -1,5 +1,19 @@
 <resources>
+    <string name="Question">Câu </string>
     <string name="app_name">AiLaTrieuPhu.1</string>
     <string name="button_yes">Yes</string>
     <string name="ok">OK</string>
+    <string name="score">Điểm</string>
+    <string name="time">00</string>
+    <string name="about">App được code bởi Phạm Bá Nam \n khoa CNTT trường đại học bách khoa Saint-peterburg</string>
+    <string name="answerBillgate">Câu này dễ quá đáp án là  </string>
+    <string name="answerObama">Tôi chắc chắn là : </string>
+    <string name="answerStever">Chọn luôn cho chú đáp án : </string>
+    <string name="answerTroll1">Hôm nay tôi không mang não nên không biết </string>
+    <string name="answerTroll2">Tôi chắc chắn câu này có 1 câu đúng :3</string>
+    <string name="answerTroll3"> Bạn nghĩ như thế nào mà dùng quyền trợ giúp câu này </string>
+    <string name="answerTroll4"> Tất tay vào b đi bạn, nó không biết đúng không nhưng tôi thích  </string>
+    <string name="AudienceHelp">hỏi ý kiển khán giả </string>
+    <string name="congratulations">Chúc mừng bạn đã trả lời đúng</string>
+
 </resources>
